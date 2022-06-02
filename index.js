@@ -73,6 +73,13 @@ async function run() {
             res.send(result)
         })
 
+        app.delete('/product/:id', async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: ObjectId(id) }
+            const result = await productCollection.deleteOne(filter)
+            res.send(result)
+        })
+
         app.get('/review', async (req, res) => {
             const reviews = await reviewCollection.find().toArray();
             res.send(reviews);
@@ -145,6 +152,13 @@ async function run() {
         app.put('/user/admin/:email', async (req, res) => {
             const email = req.params.email;
             const filter = { email: email };
+            // const requester = req.decoded.email;
+            // const requesterAccount = await userCollection.findOne({ email: requester })
+            // if (requesterAccount.role === 'admin') {
+
+            // } else {
+            //     return res.status(403).send({ message: 'Forbidden access' })
+            // }
             const updateDoc = {
                 $set: {
                     role: 'admin'
@@ -152,6 +166,7 @@ async function run() {
             };
             const result = await userCollection.updateOne(filter, updateDoc)
             res.send(result)
+
         })
 
         app.post('/order', async (req, res) => {
@@ -167,6 +182,14 @@ async function run() {
 
         app.get('/order/:email', async (req, res) => {
             const email = req.params.email;
+            // const decodedEmail = req.decoded.email;
+            const authorization = req.headers.authorization;
+            console.log('authorization', authorization);
+            // if (decodedEmail === email) {
+
+            // } else {
+            //     return res.status(403).send({ message: 'Forbidden access' })
+            // }
             const filter = { email: email }
             const result = await orderCollection.find(filter).toArray();
             res.send(result)
@@ -182,8 +205,8 @@ async function run() {
         app.get('/order/:id', async (req, res) => {
             const id = req.params.id;
             console.log(id);
-            const filter = { _id: ObjectId(id) }
-            const result = await orderCollection.findOne(filter)
+            const query = { _id: ObjectId(id) }
+            const result = await orderCollection.findOne(query)
             res.send(result)
         })
 
