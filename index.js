@@ -10,6 +10,7 @@ const port = process.env.PORT || 5000;
 // middleware
 app.use(cors())
 app.use(express.json())
+app.use(cors({ origin: 'https://best-tech0.web.app/' }))
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@best-tech0.ucbvt.mongodb.net/?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
@@ -136,7 +137,7 @@ async function run() {
         app.get('/admin/:email', async (req, res) => {
             const email = req.params.email;
             const user = await userCollection.findOne({ email: email })
-            const isAdmin = user.role === 'admin'
+            const isAdmin = user?.role === 'admin'
             console.log(user, isAdmin);
             res.send({ admin: isAdmin })
         })
@@ -180,6 +181,7 @@ async function run() {
 
         app.get('/order/:id', async (req, res) => {
             const id = req.params.id;
+            console.log(id);
             const filter = { _id: ObjectId(id) }
             const result = await orderCollection.findOne(filter)
             res.send(result)
